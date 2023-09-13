@@ -1,2 +1,2 @@
 # py-chat
-TUI p2p chat room
+TUI socketted chat room
