@@ -1,2 +1,4 @@
 build/
 py_chat.egg-info/
+.mypy_cache/
+venv
