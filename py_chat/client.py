@@ -23,8 +23,13 @@ def start() -> None:
     user = input("Enter username: ")
     if not user:
         # If no username specified, use computer name
-        user = os.environ["USER"]
-        # assert user is not None
+        if os.name == "posix":
+            user = os.environ["USER"]
+        elif os.name == "nt":  # windows
+            user = os.environ["USERDOMAIN"]
+        else:
+            print("OS not supported")
+            return
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
