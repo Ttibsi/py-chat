@@ -11,6 +11,9 @@ def broadcast(msg: bytes) -> None:
 
 
 def handle_client(client: socket.socket) -> None:
+    # TODO: Handle `/` messages like IRC does (perhaps the client turns the msg
+    # into a JSON string that's sent to the server, such as
+    # {"cmd": "send_msg", txt: "foo"} to have diferent commands implemented
     while True:
         try:
             msg = client.recv(1024)
@@ -34,6 +37,7 @@ def handle_client(client: socket.socket) -> None:
 
 
 def serve() -> None:
+    # TODO: Create a logging-style output for all messages on the server side
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # This is localhost:6789
@@ -41,6 +45,7 @@ def serve() -> None:
     s.listen(5)
 
     print("Server listening...")
+    # TODO: Write current session to log file?
     while True:
         clientsock, address = s.accept()
         print(f"Connection from {str(address)} established.")
