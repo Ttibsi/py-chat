@@ -2,10 +2,8 @@ import argparse
 from collections.abc import Sequence
 from typing import Union
 
-from py_chat.client import Window
+from py_chat.c2 import Window
 from py_chat.server import serve
-
-# from py_chat.client import start
 
 
 def main(argv: Union[Sequence[str], None] = None) -> int:
@@ -22,9 +20,8 @@ def main(argv: Union[Sequence[str], None] = None) -> int:
     if args.server:
         serve()
     elif args.client:
-        # start()
         w = Window()
-        w.run().start()
+        w.run()
 
     return 0
 
