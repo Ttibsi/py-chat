@@ -1,8 +1,9 @@
 import argparse
+import curses
 from collections.abc import Sequence
 from typing import Union
 
-from py_chat.client import start
+from py_chat.client import c_main
 from py_chat.server import serve
 
 
@@ -20,7 +21,7 @@ def main(argv: Union[Sequence[str], None] = None) -> int:
     if args.server:
         serve()
     elif args.client:
-        start()
+        return curses.wrapper(c_main)
 
     return 0
 
