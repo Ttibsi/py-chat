@@ -42,9 +42,11 @@ def start_sockets(user: str) -> socket.socket:
     return s
 
 
+# TODO: Display list of connected users to the left
 def c_main(stdscr: Window, default_colors: bool = False) -> int:
     global history
-    user = f"User {random.randint(0,9)}"
+    # TODO: Custom username? At least read the user's machine name 
+    user = f"User {random.randint(0,9)}" 
     clientSock = start_sockets(user)
 
     msg: str = ""
