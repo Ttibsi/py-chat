@@ -1,11 +1,19 @@
+import logging
 import signal
 import socket
 import threading
 import types
 
-# TODO: dataclass/namedtuple
 clients: list[socket.socket] = []
 usernames: list[bytes] = []
+
+
+def setup_logging() -> None:
+    logging.basicConfig(
+        format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+        datefmt="%H:%M:%S",
+        level=logging.DEBUG,
+    )
 
 
 def broadcast(msg: bytes) -> None:
@@ -18,6 +26,8 @@ def handle_client(client: socket.socket) -> None:
         try:
             msg = client.recv(1024)
             broadcast(msg)
+            if msg:
+                logging.info(msg)
         except Exception as e:
             print(f"ERROR: {e}")
             index = clients.index(client)
@@ -36,14 +46,13 @@ def handle_client(client: socket.socket) -> None:
             break
 
 
-# TODO: Write message log to file per session?
-# TODO: Create a logging style output
 # TODO: Handle `/` messages like IRC does (perhaps the client turns the msg
 # into a JSON string that's sent to the server, such as
 # {"cmd": "send_msg", txt: "foo"} to have diferent commands implemented
 def serve() -> None:
     def signal_handler(signal: int, frame: types.FrameType | None) -> None:
-        print("SIGINT sent")
+        print("Recieved SIGINT... shutting down")
+        logger.info("Recieved SIGINT... shutting down")
 
         try:
             s.shutdown(socket.SHUT_RDWR)
@@ -53,23 +62,29 @@ def serve() -> None:
         s.close()
         raise InterruptedError
 
+    setup_logging()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     signal.signal(signal.SIGINT, signal_handler)
 
     # This is localhost:6789
     s.bind((socket.gethostname(), 6789))
     s.listen(5)
 
+    logger = logging.getLogger()
+
     print("Server listening...")
+    logger.info("Server listening")
+
     while True:
         clientsock, address = s.accept()
-        print(f"Connection from {str(address)} established.")
 
         usernames.append(clientsock.recv(1024))
         clients.append(clientsock)
         user = usernames[-1].decode("utf-8")
         print(f"User {user} has joined the chat!".encode("utf-8"))
         broadcast(f"{user}: has connected...".encode("utf-8"))
+        logger.info(f"{user}: has connected...")
 
         thread = threading.Thread(
             target=handle_client, args=(clientsock,), daemon=True
