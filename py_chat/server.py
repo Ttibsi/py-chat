@@ -46,6 +46,7 @@ def handle_client(client: socket.socket) -> None:
             break
 
 
+# TODO: Potentially write message log to file
 # TODO: Handle `/` messages like IRC does (perhaps the client turns the msg
 # into a JSON string that's sent to the server, such as
 # {"cmd": "send_msg", txt: "foo"} to have diferent commands implemented
